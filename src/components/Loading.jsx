@@ -1,13 +1,14 @@
-import Lottie from "lottie-react";
+import { Player } from "@lottiefiles/react-lottie-player";
 import bookLoading from "../assets/book-loading.json";
 import "../styles/Loading.css";
 
 function Loading() {
   return (
     <div className="cover-loading">
-      <Lottie
-        animationData={bookLoading}
-        loop={true}
+      <Player
+        autoplay
+        loop
+        src={bookLoading}
         className="lottie-book"
       />
 

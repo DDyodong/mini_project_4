@@ -1,0 +1,47 @@
+.cover-loading {
+  width: 100%;
+
+  /* GPT-image-2 표지 비율 (1024x1536 = 2:3) */
+  aspect-ratio: 2 / 3;
+
+  border: 2px dashed #d9d0c5;
+  border-radius: 20px;
+
+  background: #f8f5ef;
+
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+
+  text-align: center;
+
+  padding: 24px;
+  box-sizing: border-box;
+
+  overflow: hidden;
+}
+
+/* Lottie 크기 */
+.lottie-book {
+  width: 180px;
+  height: 180px;
+
+  margin-bottom: 12px;
+}
+
+/* 메인 문구 */
+.cover-loading p {
+  margin: 0;
+  font-size: 18px;
+  font-weight: 700;
+  color: #2f5d50;
+}
+
+/* 보조 문구 */
+.cover-loading span {
+  margin-top: 8px;
+
+  font-size: 14px;
+  color: #7b7267;
+}
