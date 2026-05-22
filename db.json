@@ -1,0 +1,25 @@
+{
+  "books": [
+    {
+      "id": "1",
+      "title": "별빛 아래의 서점",
+      "author": "홍길동",
+      "content": "작은 마을 서점의 1년을 담은 에세이",
+      "coverImageUrl": "",
+      "createdAt": "2026-05-22T09:00:00.000Z",
+      "updatedAt": "2026-05-22T09:00:00.000Z",
+      "views": 0,
+      "genre": "에세이",
+      "likes": 0    },
+    {
+      "id": "2",
+      "title": "네온 시티의 추적자들",
+      "author": "박승원",
+      "content": "2099년 사이버펑크 도시, 어둠 속에서 진실을 쫓는 탐정의 긴박한 추적 스릴러 소설.",
+      "genre": "소설",
+      "style": "사이버펑크 일러스트",
+      "image_url": "https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe",
+      "created_at": "2026-05-22"
+    }
+  ]
+}
