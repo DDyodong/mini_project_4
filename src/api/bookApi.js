@@ -1,6 +1,13 @@
-// src/api/bookApi.js
-
 const BASE_URL = "http://localhost:4000/books";
+
+// 한국 시간으로 저장.
+const getKoreaTime = () => {
+  const now = new Date();
+  const koreaTime = new Date(now.getTime() + 9 * 60 * 60 * 1000);
+
+  return koreaTime.toISOString().replace("Z", "+09:00");
+};
+
 
 // 전체 책 목록 조회
 export async function getBooks() {
@@ -28,13 +35,13 @@ export async function getBookById(id) {
 
 // 책 등록
 export async function createBook(bookData) {
-  const now = new Date().toISOString();
+  const now = getKoreaTime();
 
   const newBook = {
     ...bookData,
     coverImageUrl: bookData.coverImageUrl || "",
-    createdAt: now,
-    updatedAt: now,
+    createdAt: now ,
+    updatedAt: now ,
     views: 0,
     likes: 0,
   };
@@ -59,7 +66,7 @@ export async function createBook(bookData) {
 export async function updateBook(id, bookData) {
   const updatedBook = {
     ...bookData,
-    updatedAt: new Date().toISOString(),
+    updatedAt: getKoreaTime(),
   };
 
   const res = await fetch(`${BASE_URL}/${id}`, {
@@ -87,7 +94,7 @@ export async function patchBook(id, bookData) {
     },
     body: JSON.stringify({
       ...bookData,
-      updatedAt: new Date().toISOString(),
+      updatedAt: getKoreaTime(),
     }),
   });
 
@@ -121,7 +128,6 @@ export async function increaseViews(id, currentViews) {
     },
     body: JSON.stringify({
       views: currentViews + 1,
-      updatedAt: new Date().toISOString(),
     }),
   });
 
@@ -142,7 +148,6 @@ export async function increaseLikes(id, currentLikes) {
     },
     body: JSON.stringify({
       likes: currentLikes + 1,
-      updatedAt: new Date().toISOString(),
     }),
   });
 
