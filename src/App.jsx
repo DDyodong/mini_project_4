@@ -1,9 +1,10 @@
+import BookCreatePage from "./pages/BookCreatePage";
+// import BookEditPage from "./pages/BookEditPage";
+ 
 function App() {
   return (
     <div>
-      <h1>작가의 산책</h1>
+      <BookCreatePage />
     </div>
-  )
+  );
 }
-
-export default App
