@@ -1,10 +1,7 @@
-import BookCreatePage from "./pages/BookCreatePage";
-// import BookEditPage from "./pages/BookEditPage";
- 
+import AppRouter from "./routes/AppRouter";
+
 function App() {
-  return (
-    <div>
-      <BookCreatePage />
-    </div>
-  );
-}export default App;
+  return <AppRouter />;
+}
+
+export default App;

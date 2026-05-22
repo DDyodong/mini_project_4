@@ -1,5 +1,5 @@
-import { Link, useParams } from "react-router-dom";
-import "./BookDetailPage.css";
+import { Link } from "react-router-dom";
+import "../styles/global.css";
  
 function BookDetailPage() {
   const { id } = useParams();
