@@ -7,12 +7,13 @@ function BookCreatePage() {
 
   const handleCreate = async (formData) => {
     try {
-      await createBook(formData);
-      console.log("도서가 성공적으로 등록되었습니다.");
-      navigate("/");
+      //  coverImageUrl 빈 값으로 임시저장
+      const newBook = await createBook({ ...formData, coverImageUrl: "" });
+      console.log("도서가 임시 저장되었습니다.");
+      //표지 생성 페이지로 자동 이동
+      navigate(`/create/cover/${newBook.id}`);
     } catch (error) {
       console.error(error);
-      console.log("도서 등록에 실패했습니다.");
       alert("도서 등록에 실패했습니다. 다시 시도해주세요.");
     }
   };
@@ -20,10 +21,10 @@ function BookCreatePage() {
   return (
     <main>
       <section>
-        <h2>새 도서 등록</h2>
+        <h2>새 도서 등록 (1단계)</h2>
         <p>제목, 작가명, 내용을 입력해 새 작품을 등록합니다.</p>
 
-        <BookForm submitText="저장" onSubmit={handleCreate} />
+        <BookForm submitText="저장 후 표지 생성 →" onSubmit={handleCreate} />
 
         <button type="button" onClick={() => navigate("/")}>
           취소

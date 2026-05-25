@@ -1,87 +1,100 @@
-import { Link } from "react-router-dom";
-import "../styles/global.css";
- 
+import { useNavigate, useParams } from "react-router-dom";
+import { useEffect, useState } from "react";
+import { getBookById, deleteBook } from "../api/bookApi";
+
 function BookDetailPage() {
   const { id } = useParams();
- 
-  const book = {
-    id,
-    title: "별빛 아래의 서점",
-    author: "홍길동",
-    genre: "에세이",
-    description:
-      "작은 마을 서점에서 벌어지는 따뜻한 이야기입니다. 도시를 떠난 주인공이 오래된 서점에서 사람들과 만나며 성장하는 내용을 담고 있습니다.",
-    createdAt: "2026.04.24",
-    updatedAt: "2026.04.24",
+  const navigate = useNavigate();
+
+  const [book, setBook] = useState(null);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    const fetchBook = async () => {
+      try {
+        const data = await getBookById(id);
+        setBook(data);
+      } catch (error) {
+        console.error(error);
+        alert("도서 정보를 불러오지 못했습니다.");
+        navigate("/");
+      } finally {
+        setLoading(false);
+      }
+    };
+    fetchBook();
+  }, [id, navigate]);
+
+  const handleDelete = async () => {
+    if (!window.confirm("정말 삭제하시겠습니까?")) return;
+    try {
+      await deleteBook(id);
+      navigate("/");
+    } catch (error) {
+      console.error(error);
+      alert("삭제에 실패했습니다.");
+    }
   };
- 
+
+  if (loading) return <p>불러오는 중...</p>;
+  if (!book) return <p>도서를 찾을 수 없습니다.</p>;
+
   return (
-<div className="detail-page">
-<div className="detail-top">
-<Link to="/">
-<button>← 목록</button>
-</Link>
- 
+    <main>
+      <section>
+
+        {/* 상단 버튼 영역 */}
         <div>
-<Link to={`/books/${id}/edit`}>
-<button className="edit-button">수정</button>
-</Link>
- 
-          <button className="delete-button">삭제</button>
-</div>
-</div>
- 
-      <h1>도서 상세</h1>
- 
-      <section className="detail-card">
-<div className="detail-cover">표지</div>
- 
-        <div className="detail-info">
-<h2>{book.title}</h2>
- 
-          <p>저자명: {book.author}</p>
-<p>장르: {book.genre}</p>
-<p>등록일: {book.createdAt}</p>
-<p>수정일: {book.updatedAt}</p>
- 
-          <p className="description">{book.description}</p>
-</div>
-</section>
- 
-      <section className="ai-section">
-<h2>AI 표지 생성 영역</h2>
- 
-        <p>
-          도서 제목과 내용을 기반으로 표지를 생성하고 저장합니다.
-</p>
- 
-        <label>OpenAI API Key</label>
- 
-        <div className="ai-form">
-<input
-            type="password"
-            placeholder="password 타입 입력"
-          />
- 
-          <select>
-<option>화풍 선택</option>
-<option>감성풍</option>
-<option>판타지풍</option>
-<option>미니멀풍</option>
-<option>SF풍</option>
-</select>
- 
-          <button className="primary-button">
-            생성
-</button>
-</div>
- 
-        <p className="status-text">
-          상태: 생성 중 / 에러 / 생성 완료 안내
-</p>
-</section>
-</div>
+          <button onClick={() => navigate("/")}>← 목록</button>
+          <div>
+            {/* 수정 버튼 → 1단계 수정 폼으로 */}
+            <button onClick={() => navigate(`/edit/${id}`)}>수정</button>
+            {/* 삭제 버튼 */}
+            <button onClick={handleDelete}>삭제</button>
+          </div>
+        </div>
+
+        {/* 표지 이미지 + 책 정보 */}
+        <div>
+
+          {/* 표지 이미지 */}
+          <div>
+            {book.coverImageUrl ? (
+              <img
+                src={book.coverImageUrl}
+                alt={`${book.title} 표지`}
+                style={{ width: "220px", borderRadius: "12px" }}
+              />
+            ) : (
+              <div>표지 없음</div>
+            )}
+
+            {/* ✅ 표지 재생성 버튼 → /edit/cover/:id 로 이동 */}
+            <button onClick={() => navigate(`/edit/cover/${id}`)}>
+              표지 재생성
+            </button>
+          </div>
+
+          {/* 책 정보 */}
+          <div>
+            <h2>{book.title}</h2>
+            <p>저자: {book.author}</p>
+            <p>
+              장르:{" "}
+              {Array.isArray(book.genre)
+                ? book.genre.join(", ")
+                : book.genre}
+            </p>
+            <p>등록일: {book.createdAt}</p>
+            <p>수정일: {book.updatedAt}</p>
+            <p>{book.content}</p>
+          </div>
+
+        </div>
+
+      </section>
+    </main>
   );
 }
- 
+
 export default BookDetailPage;
