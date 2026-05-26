@@ -1,4 +1,4 @@
-import { useNavigate } from "react-router";
+import { useNavigate } from "react-router-dom";
 import { createBook } from "@/api/bookApi";
 import BookForm from "@/components/BookForm";
 
@@ -7,10 +7,9 @@ function BookCreatePage() {
 
   const handleCreate = async (formData) => {
     try {
-      //  coverImageUrl 빈 값으로 임시저장
       const newBook = await createBook({ ...formData, coverImageUrl: "" });
       console.log("도서가 임시 저장되었습니다.");
-      //표지 생성 페이지로 자동 이동
+
       navigate(`/create/cover/${newBook.id}`);
     } catch (error) {
       console.error(error);
