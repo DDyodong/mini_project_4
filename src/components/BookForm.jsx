@@ -1,155 +1,143 @@
-import { useEffect, useState } from "react";
+import { useState } from "react";
 
-const DEFAULT_INITIAL_VALUES = {
+const EMPTY_BOOK = {
   title: "",
   author: "",
   genre: [],
   content: "",
-  coverImageUrl: "",
 };
 
-const GENRE_OPTIONS = ["에세이", "소설", "자기계발", "판타지", "스릴러", "기타"];
+const GENRE_OPTIONS = [
+  "소설",
+  "에세이",
+  "자기계발",
+  "인문학",
+  "SF",
+  "판타지",
+  "미스터리",
+  "심리학",
+  "경제",
+  "기타",
+];
+
+function toFormValues(values) {
+  return {
+    title: values.title || "",
+    author: values.author || "",
+    genre: Array.isArray(values.genre) ? values.genre : [],
+    content: values.content || "",
+  };
+}
 
 function BookForm({
-  initialValues = DEFAULT_INITIAL_VALUES,
-  submitText = "저장",
+  initialValues = EMPTY_BOOK,
+  submitText,
   onSubmit,
+  submitting = false,
 }) {
-  const [formData, setFormData] = useState(initialValues);
+  const [formData, setFormData] = useState(() => toFormValues(initialValues));
+  const [errors, setErrors] = useState({});
 
-  useEffect(() => {
-    setFormData({
-      title: initialValues.title || "",
-      author: initialValues.author || "",
-      genre: Array.isArray(initialValues.genre)
-        ? initialValues.genre
-        : initialValues.genre
-        ? [initialValues.genre]
-        : [],
-      content: initialValues.content || "",
-      coverImageUrl: initialValues.coverImageUrl || "",
-    });
-  }, [
-    initialValues.title,
-    initialValues.author,
-    initialValues.genre,
-    initialValues.content,
-    initialValues.coverImageUrl,
-  ]);
-
-  const handleChange = (e) => {
-    const { name, value } = e.target;
-
-    setFormData((prev) => ({
-      ...prev,
-      [name]: value,
-    }));
+  const handleChange = (event) => {
+    const { name, value } = event.target;
+    setFormData((current) => ({ ...current, [name]: value }));
+    setErrors((current) => ({ ...current, [name]: "" }));
   };
 
-const handleGenreChange = (e) => {
-    const { value, checked } = e.target;
+  const handleGenreChange = (event) => {
+    const { checked, value } = event.target;
+    setFormData((current) => ({
+      ...current,
+      genre: checked
+        ? [...current.genre, value]
+        : current.genre.filter((genre) => genre !== value),
+    }));
+    setErrors((current) => ({ ...current, genre: "" }));
+  };
 
-    setFormData((prev) => {
-        const currentGenres = Array.isArray(prev.genre) ? prev.genre : [];
+  const handleSubmit = (event) => {
+    event.preventDefault();
 
-        return {
-        ...prev,
-        genre: checked
-            ? [...currentGenres, value]
-            : currentGenres.filter((genre) => genre !== value),
-        };
+    const nextErrors = {};
+    if (!formData.title.trim()) nextErrors.title = "제목을 입력해주세요.";
+    if (!formData.author.trim()) nextErrors.author = "저자를 입력해주세요.";
+    if (!formData.content.trim()) nextErrors.content = "도서 소개를 입력해주세요.";
+    if (formData.genre.length === 0) nextErrors.genre = "장르를 하나 이상 선택해주세요.";
+
+    if (Object.keys(nextErrors).length > 0) {
+      setErrors(nextErrors);
+      return;
+    }
+
+    onSubmit({
+      title: formData.title.trim(),
+      author: formData.author.trim(),
+      genre: formData.genre,
+      content: formData.content.trim(),
     });
-};
-
-const handleSubmit = (e) => {
-    e.preventDefault();
-
-    if (!formData.title.trim()) {
-      alert("제목을 입력해주세요.");
-      return;
-    }
-
-    if (!formData.author.trim()) {
-      alert("저자를 입력해주세요.");
-      return;
-    }
-
-    if (!formData.content.trim()) {
-      alert("내용을 입력해주세요.");
-      return;
-    }
-
-    if (formData.genre.length === 0) {
-      alert("장르를 하나 이상 선택해주세요.");
-      return;
-    }
-
-    onSubmit(formData);
   };
 
   return (
-    <form className="book-form" onSubmit={handleSubmit}>
-      <div className="form-group">
-        <label>제목</label>
-        <input
-          name="title"
-          value={formData.title}
-          onChange={handleChange}
-          placeholder="도서 제목을 입력하세요"
-        />
+    <form className="book-form" onSubmit={handleSubmit} noValidate>
+      <div className="form-row">
+        <label className="field">
+          <span>제목 <strong>필수</strong></span>
+          <input
+            name="title"
+            value={formData.title}
+            onChange={handleChange}
+            placeholder="예: 시간을 건너는 도서관"
+            aria-invalid={Boolean(errors.title)}
+          />
+          {errors.title && <small className="field-error">{errors.title}</small>}
+        </label>
+
+        <label className="field">
+          <span>저자 <strong>필수</strong></span>
+          <input
+            name="author"
+            value={formData.author}
+            onChange={handleChange}
+            placeholder="저자명을 입력하세요"
+            aria-invalid={Boolean(errors.author)}
+          />
+          {errors.author && <small className="field-error">{errors.author}</small>}
+        </label>
       </div>
 
-      <div className="form-group">
-        <label>저자</label>
-        <input
-          name="author"
-          value={formData.author}
-          onChange={handleChange}
-          placeholder="저자명을 입력하세요"
-        />
-      </div>
-
-      <div className="form-group">
-        <label>장르</label>
-
-        <div className="genre-checkbox-group">
+      <fieldset className="field genre-field">
+        <legend>장르 <strong>필수</strong></legend>
+        <div className="genre-options">
           {GENRE_OPTIONS.map((genre) => (
-            <label key={genre} className="genre-checkbox">
+            <label key={genre} className="genre-option">
               <input
                 type="checkbox"
                 value={genre}
                 checked={formData.genre.includes(genre)}
                 onChange={handleGenreChange}
               />
-              {genre}
+              <span>{genre}</span>
             </label>
           ))}
         </div>
-      </div>
+        {errors.genre && <small className="field-error">{errors.genre}</small>}
+      </fieldset>
 
-      <div className="form-group">
-        <label>표지 이미지 URL</label>
-        <input
-          name="coverImageUrl"
-          value={formData.coverImageUrl}
-          onChange={handleChange}
-          placeholder="이미지 주소를 입력하세요"
-        />
-      </div>
-
-      <div className="form-group">
-        <label>내용</label>
+      <label className="field">
+        <span>도서 소개 <strong>필수</strong></span>
         <textarea
           name="content"
           value={formData.content}
           onChange={handleChange}
-          placeholder="도서 설명을 입력하세요"
-          rows="6"
+          placeholder="AI 표지 생성에 활용될 도서의 분위기와 내용을 소개해주세요."
+          rows="8"
+          aria-invalid={Boolean(errors.content)}
         />
-      </div>
+        {errors.content && <small className="field-error">{errors.content}</small>}
+      </label>
 
-      <button type="submit" className="submit-button">
-        {submitText}
+      <button className="button button-primary button-wide" type="submit" disabled={submitting}>
+        {submitting ? "저장 중..." : submitText}
       </button>
     </form>
   );

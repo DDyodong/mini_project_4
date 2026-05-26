@@ -1,5 +1,6 @@
 .cover-loading {
   width: 100%;
+  margin-bottom: 20px;
 
   /* 책 표지 비율 */
   aspect-ratio: 2 / 3;
