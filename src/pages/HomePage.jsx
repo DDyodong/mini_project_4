@@ -12,12 +12,7 @@ function HomePage() {
       try {
         setLoading(true);
         const data = await getBooks();
-        
-        // [디버깅] 서버에서 받은 데이터 구조 확인
-        console.log("Fetched Data:", data); 
 
-        // 데이터가 배열이 아니라 { books: [...] } 형태일 수 있습니다.
-        // db.json 구조가 { "books": [...] } 라면, data.books 로 접근해야 할 수도 있습니다.
         if (Array.isArray(data)) {
           setBooks(data);
         } else if (data && data.books) {
@@ -37,14 +32,10 @@ function HomePage() {
 
   if (loading) return <div>로딩 중...</div>;
 
-  // [디버깅] 현재 상태 확인
-  console.log("Current Books State:", books);
-
   if (books.length === 0) return <div>등록된 도서가 없습니다.</div>;
 
   return (
     <div className="home-page">
-      {/* ... 기존 코드 동일 ... */}
       <section className="book-grid">
         {books.map((book) => (
           <Link to={`/books/${book.id}`} className="book-card" key={book.id}>
