@@ -54,14 +54,14 @@ function HomePage() {
           <h1>
             한 권의 이야기에
             <br />
-            어울리는 표지를 만드세요
+            어울리는 표지를 만드세요.
           </h1>
           <p className="hero-copy">
-            도서를 등록하고 OpenAI 이미지 생성 API로 나만의 표지를 완성하는
+            도서를 등록하고 OpenAI 이미지 생성 API로 나만의 표지를 완성하는<br />
             도서관리 시스템입니다.
           </p>
           <Link className="button button-accent" to="/create">
-            새 표지 만들기
+            새 도서 등록하기
           </Link>
         </div>
         <div className="container stat-row" aria-label="도서 현황">

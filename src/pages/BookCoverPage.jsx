@@ -7,12 +7,20 @@ import Loading from "@/components/Loading";
 const MAX_STORED_COVER_BYTES = 88 * 1024;
 
 function buildPrompt(book) {
-  const genres = Array.isArray(book.genre) ? book.genre.join(", ") : book.genre;
+  const genres = Array.isArray(book.genre)
+    ? book.genre.join(", ")
+    : book.genre;
+
   return [
-    `Create a compelling Korean book cover for "${book.title}" by ${book.author}.`,
-    `Genre: ${genres}.`,
-    `Story concept: ${book.content}`,
-    "Portrait book cover composition, refined typography space, no readable text, atmospheric lighting, professional publishing design.",
+    `"${book.title}"라는 제목의 한국어 도서 표지를 만들어줘. 저자는 "${book.author}"이다.`,
+    `장르는 ${genres}이다.`,
+    `줄거리 및 핵심 내용: ${book.content}`,
+    `이 이미지는 단순한 분위기 이미지가 아니라, 실제 출판용 느낌의 완성된 책 표지 디자인이어야 한다.`,
+    `표지에는 책 제목 "${book.title}"이 반드시 정확하게 포함되어야 하며, 눈에 잘 띄고 읽기 쉽게 표시되어야 한다.`,
+    `책 제목은 크고 선명하며 또렷한 글자로 표현해줘.`,
+    `가능하면 저자명 "${book.author}"도 표지에 자연스럽게 포함해줘.`,
+    `전체적으로 한국 출판 도서 표지처럼 세련되고 완성도 높게 디자인해줘.`,
+    `세로형 책 표지 구도, 앞표지 기준, 분위기 있는 조명, 높은 퀄리티의 일러스트, 정제된 타이포그래피와 시각적 스토리텔링을 반영해줘.`,
   ].join("\n");
 }
 
