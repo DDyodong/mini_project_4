@@ -64,10 +64,11 @@ function BookCoverPage({ mode }) {
             Authorization: `Bearer ${apiKey}`,
           },
           body: JSON.stringify({
-            model: "dall-e-3",
+            model: "gpt-image-2",
             prompt,
             n: 1,
             size: "1024x1024",
+            
           }),
         }
       );
@@ -77,7 +78,8 @@ function BookCoverPage({ mode }) {
       }
 
       const data = await res.json();
-      const imageUrl = data.data[0].url;
+      const base64Image = data.data[0].b64_json;
+      const imageUrl = `data:image/png;base64,${base64Image}`;
 
       setGeneratedUrl(imageUrl);
       setStatus("done");
