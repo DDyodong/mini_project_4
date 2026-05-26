@@ -1,6 +1,7 @@
 import { useNavigate, useParams } from "react-router-dom";
 import { useEffect, useState } from "react";
 import { getBookById, patchBook } from "../api/bookApi";
+import Loading from "../components/Loading";
 
 function BookCoverPage({ mode }) {
   const { id } = useParams();
@@ -8,8 +9,11 @@ function BookCoverPage({ mode }) {
 
   const [book, setBook] = useState(null);
   const [apiKey, setApiKey] = useState("");
-  const [extraPrompt, setExtraPrompt] = useState(""); // ✅ 자유 입력 프롬프트
-  const [status, setStatus] = useState("idle"); // idle | loading | done | error
+  const [extraPrompt, setExtraPrompt] = useState("");
+
+  // idle | loading | done | error
+  const [status, setStatus] = useState("idle");
+
   const [generatedUrl, setGeneratedUrl] = useState("");
 
   // 책 정보 불러오기
@@ -24,6 +28,7 @@ function BookCoverPage({ mode }) {
         navigate("/");
       }
     };
+
     fetchBook();
   }, [id, navigate]);
 
@@ -37,27 +42,35 @@ function BookCoverPage({ mode }) {
     setStatus("loading");
     setGeneratedUrl("");
 
-    // extraPrompt 있을 때만 프롬프트에 추가
-    const prompt = `Book cover for "${book.title}" by ${book.author}. Genre: ${
-      Array.isArray(book.genre) ? book.genre.join(", ") : book.genre
+    const prompt = `Book cover for "${book.title}" by ${
+      book.author
+    }. Genre: ${
+      Array.isArray(book.genre)
+        ? book.genre.join(", ")
+        : book.genre
     }. Description: ${book.content}${
-      extraPrompt.trim() ? `. Additional style: ${extraPrompt}` : ""
+      extraPrompt.trim()
+        ? `. Additional style: ${extraPrompt}`
+        : ""
     }`;
 
     try {
-      const res = await fetch("https://api.openai.com/v1/images/generations", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${apiKey}`,
-        },
-        body: JSON.stringify({
-          model: "dall-e-3",
-          prompt,
-          n: 1,
-          size: "1024x1024",
-        }),
-      });
+      const res = await fetch(
+        "https://api.openai.com/v1/images/generations",
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${apiKey}`,
+          },
+          body: JSON.stringify({
+            model: "dall-e-3",
+            prompt,
+            n: 1,
+            size: "1024x1024",
+          }),
+        }
+      );
 
       if (!res.ok) {
         throw new Error("이미지 생성에 실패했습니다.");
@@ -65,6 +78,7 @@ function BookCoverPage({ mode }) {
 
       const data = await res.json();
       const imageUrl = data.data[0].url;
+
       setGeneratedUrl(imageUrl);
       setStatus("done");
     } catch (error) {
@@ -73,10 +87,13 @@ function BookCoverPage({ mode }) {
     }
   };
 
-  // 이미지 저장 후 상세 페이지로 이동
+  // 이미지 저장
   const handleSave = async () => {
     try {
-      await patchBook(id, { coverImageUrl: generatedUrl });
+      await patchBook(id, {
+        coverImageUrl: generatedUrl,
+      });
+
       navigate(`/books/${id}`);
     } catch (error) {
       console.error(error);
@@ -84,50 +101,71 @@ function BookCoverPage({ mode }) {
     }
   };
 
-  // 건너뛰기 — 경고창 후 상세 페이지로 이동
+  // 건너뛰기
   const handleSkip = () => {
     const confirmed = window.confirm(
       "표지 이미지 없이 저장하시겠습니까?\n나중에 상세 페이지에서 다시 생성할 수 있습니다."
     );
+
     if (confirmed) {
       navigate(`/books/${id}`);
     }
   };
 
-  if (!book) return <p>불러오는 중...</p>;
+  if (!book) {
+    return <p>불러오는 중...</p>;
+  }
 
   return (
     <main>
       <section>
         <h2>
-          {mode === "edit" ? "도서 수정 (2단계)" : "새 도서 등록 (2단계)"} — 표지 생성
+          {mode === "edit"
+            ? "도서 수정 (2단계)"
+            : "새 도서 등록 (2단계)"}
+          {" "}— 표지 생성
         </h2>
+
         <p>
-          <strong>{book.title}</strong>의 표지를 AI로 생성합니다.
+          <strong>{book.title}</strong>의
+          표지를 AI로 생성합니다.
         </p>
 
-        {/* API Key 입력 */}
+        {/* API KEY */}
         <div>
-          <label htmlFor="apiKey">OpenAI API Key</label>
+          <label htmlFor="apiKey">
+            OpenAI API Key
+          </label>
+
           <input
             id="apiKey"
             type="password"
             placeholder="sk-..."
             value={apiKey}
-            onChange={(e) => setApiKey(e.target.value)}
+            onChange={(e) =>
+              setApiKey(e.target.value)
+            }
           />
         </div>
 
-        {/*  자유 입력 프롬프트 */}
+        {/* 추가 프롬프트 */}
         <div>
-          <label htmlFor="extraPrompt">추가 프롬프트 (선택)</label>
+          <label htmlFor="extraPrompt">
+            추가 프롬프트 (선택)
+          </label>
+
           <textarea
             id="extraPrompt"
-            placeholder="ex) 수채화풍, 젊은 여성 주인공, 따뜻한 색감, 夜景 배경"
+            placeholder="ex) 수채화풍, 따뜻한 색감, 판타지 분위기"
             value={extraPrompt}
-            onChange={(e) => setExtraPrompt(e.target.value)}
+            onChange={(e) =>
+              setExtraPrompt(e.target.value)
+            }
             rows={3}
-            style={{ width: "100%", resize: "vertical" }}
+            style={{
+              width: "100%",
+              resize: "vertical",
+            }}
           />
         </div>
 
@@ -136,33 +174,70 @@ function BookCoverPage({ mode }) {
           onClick={handleGenerate}
           disabled={status === "loading"}
         >
-          {status === "loading" ? "생성 중..." : "표지 생성"}
+          {status === "loading"
+            ? "생성 중..."
+            : "표지 생성"}
         </button>
 
-        {/* 상태 메시지 */}
-        {status === "loading" && <p>AI가 표지를 생성하고 있습니다...</p>}
-        {status === "error" && (
-          <p>❌ 생성에 실패했습니다. API Key와 네트워크를 확인해주세요.</p>
-        )}
-        {status === "done" && <p>✅ 생성 완료!</p>}
-
-        {/* 생성된 이미지 미리보기 */}
-        {generatedUrl && (
-          <div>
-            <img
-              src={generatedUrl}
-              alt="생성된 표지"
-              style={{ width: "220px", borderRadius: "12px", marginTop: "16px" }}
-            />
+        {/* 미리보기 영역 */}
+        <div style={{ marginTop: "24px" }}>
+          {/* idle */}
+          {status === "idle" && (
             <div>
-              <button onClick={handleSave}>이 표지로 저장</button>
+              <p>
+                표지를 생성하면 이곳에
+                미리보기가 표시됩니다.
+              </p>
             </div>
-          </div>
-        )}
+          )}
+
+          {/* loading */}
+          {status === "loading" && (
+            <Loading />
+          )}
+
+          {/* error */}
+          {status === "error" && (
+            <p>
+              ❌ 생성에 실패했습니다.
+              API Key와 네트워크를 확인해주세요.
+            </p>
+          )}
+
+          {/* done */}
+          {status === "done" &&
+            generatedUrl && (
+              <div>
+                <p>✅ 생성 완료!</p>
+
+                <img
+                  src={generatedUrl}
+                  alt="생성된 표지"
+                  style={{
+                    width: "220px",
+                    borderRadius: "12px",
+                    marginTop: "16px",
+                  }}
+                />
+
+                <div
+                  style={{
+                    marginTop: "16px",
+                  }}
+                >
+                  <button onClick={handleSave}>
+                    이 표지로 저장
+                  </button>
+                </div>
+              </div>
+            )}
+        </div>
 
         {/* 건너뛰기 */}
         <div style={{ marginTop: "20px" }}>
-          <button onClick={handleSkip}>건너뛰기</button>
+          <button onClick={handleSkip}>
+            건너뛰기
+          </button>
         </div>
       </section>
     </main>
