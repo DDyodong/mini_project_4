@@ -1,6 +1,6 @@
 import { useNavigate, useParams } from "react-router-dom";
 import { useEffect, useState } from "react";
-import { getBookById, patchBook } from "../api/bookApi";
+import { getBookById, patchBook } from "@/api/bookApi";
 
 function BookCoverPage({ mode }) {
   const { id } = useParams();

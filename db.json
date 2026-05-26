@@ -27,6 +27,21 @@
         "소설"
       ],
       "likes": 0
+    },
+    {
+      "title": "test",
+      "author": "test1",
+      "genre": [
+        "에세이"
+      ],
+      "content": "wqer",
+      "coverImageUrl": "",
+      "createdAt": "2026-05-26T10:58:30.866+09:00",
+      "updatedAt": "2026-05-26T10:58:30.866+09:00",
+      "views": 0,
+      "likes": 0,
+      "id": "WAYVmNpI6OE"
     }
-  ]
+  ],
+  "$schema": "./node_modules/json-server/schema.json"
 }

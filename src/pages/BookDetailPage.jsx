@@ -1,6 +1,6 @@
 import { useNavigate, useParams } from "react-router-dom";
 import { useEffect, useState } from "react";
-import { getBookById, deleteBook } from "../api/bookApi";
+import { getBookById, deleteBook } from "@/api/bookApi";
 
 function BookDetailPage() {
   const { id } = useParams();

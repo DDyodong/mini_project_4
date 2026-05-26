@@ -1,6 +1,6 @@
 import { useNavigate } from "react-router";
-import { createBook } from "../api/bookApi";
-import BookForm from "../components/BookForm";
+import { createBook } from "@/api/bookApi";
+import BookForm from "@/components/BookForm";
 
 function BookCreatePage() {
   const navigate = useNavigate();

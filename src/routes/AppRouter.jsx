@@ -6,7 +6,7 @@ import HomePage from '../pages/HomePage';
 import BookDetailPage from '../pages/BookDetailPage';
 import BookCreatePage from '../pages/BookCreatePage';
 import BookEditPage from '../pages/BookEditPage';
-import BookCoverPage from '../pages/BookCoverPage'; // ✅ 추가
+import BookCoverPage from '../pages/BookCoverPage'; 
 
 const AppRouter = () => {
   return (
@@ -16,10 +16,10 @@ const AppRouter = () => {
         <Routes>
           <Route path="/" element={<HomePage />} />
           <Route path="/create" element={<BookCreatePage />} />
-          <Route path="/create/cover/:id" element={<BookCoverPage mode="create" />} /> {/* ✅ 추가 */}
+          <Route path="/create/cover/:id" element={<BookCoverPage mode="create" />} /> 
           <Route path="/books/:id" element={<BookDetailPage />} />
           <Route path="/edit/:id" element={<BookEditPage />} />
-          <Route path="/edit/cover/:id" element={<BookCoverPage mode="edit" />} /> {/* ✅ 추가 */}
+          <Route path="/edit/cover/:id" element={<BookCoverPage mode="edit" />} /> 
         </Routes>
       </main>
       <Footer />

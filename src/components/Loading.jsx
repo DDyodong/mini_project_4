@@ -1,6 +1,6 @@
 import { Player } from "@lottiefiles/react-lottie-player";
-import bookLoading from "../assets/book-loading.json";
-import "../styles/Loading.css";
+import bookLoading from "@/assets/book-loading.json";
+import "@/styles/Loading.css";
 
 function Loading() {
   return (

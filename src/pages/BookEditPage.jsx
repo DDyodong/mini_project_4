@@ -1,7 +1,7 @@
 import { useNavigate, useParams } from "react-router-dom";
 import { useEffect, useState } from "react";
-import { getBookById, updateBook } from "../api/bookApi";
-import BookForm from "../components/BookForm";
+import { getBookById, updateBook } from "@/api/bookApi";
+import BookForm from "@/components/BookForm";
 
 function BookEditPage() {
   const { id } = useParams();
