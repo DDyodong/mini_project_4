@@ -45,6 +45,38 @@ export function createBook(bookData) {
   );
 }
 
+export function viewCounter({ id, currentViews }) {
+
+  return request(
+    `${BASE_URL}/${id}`,
+    {
+      method: "PATCH",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        views: currentViews + 1,
+        updatedAt: getTimestamp(),
+      }),
+    },
+    "조회수 업데이트에 실패했습니다.",
+  );
+}
+
+export function likeCounter({ id, currentLikes }) {
+  
+  return request(
+    `${BASE_URL}/${id}`,
+    {
+      method: "PATCH",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        likes: currentLikes + 1,
+        updatedAt: getTimestamp(),
+      }),
+    },
+    "좋아요 업데이트에 실패했습니다.",
+  );
+}
+
 export function updateBook(id, changes) {
   return request(
     `${BASE_URL}/${id}`,

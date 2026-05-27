@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { Link, useNavigate, useParams } from "react-router-dom";
-import { deleteBook, getBookById } from "@/api/bookApi";
+import { deleteBook, getBookById, viewCounter, likeCounter } from "@/api/bookApi";
 import BookCover from "@/components/BookCover";
 
 function formatDate(date) {
@@ -23,16 +23,34 @@ function BookDetailPage() {
   useEffect(() => {
     async function loadBook() {
       try {
-        setBook(await getBookById(id));
+        const fetchedBook = await getBookById(id);
+        await viewCounter({id: fetchedBook.id, currentViews: fetchedBook.views});
+        setBook({
+          ...fetchedBook,
+          views: fetchedBook.views + 1,
+        });   
       } catch (loadError) {
         setError(loadError.message);
       } finally {
         setLoading(false);
       }
-    }
-
+    }  
     loadBook();
   }, [id]);
+
+  const handleLike = async () => {
+    if (!book) return;
+
+    try {
+      await likeCounter({ id: book.id, currentLikes: book.likes });
+      setBook({
+        ...book,
+        likes: book.likes + 1,
+      });
+    } catch (likeError) {
+      setError(likeError.message);
+    }
+  };
 
   const handleDelete = async () => {
     if (!window.confirm("이 도서를 삭제하시겠습니까?")) return;
@@ -85,7 +103,13 @@ function BookDetailPage() {
           <dl className="book-meta">
             <div><dt>등록일</dt><dd>{formatDate(book.createdAt)}</dd></div>
             <div><dt>최근 수정</dt><dd>{formatDate(book.updatedAt)}</dd></div>
+            <button className="button" onClick={handleLike} style={{ marginTop: "10px" }}>
+            ❤️ ({book.likes})
+            </button>
           </dl>
+          <div className="chip-row">
+            <span className="chip">조회수 {book.views}</span>
+          </div>
           <div className="description">
             <h2>책 소개</h2>
             {book.content.split("\n").map((paragraph) => (
