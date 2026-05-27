@@ -1,99 +1,100 @@
-import { useNavigate, useParams } from "react-router-dom";
 import { useEffect, useState } from "react";
-import { getBookById, deleteBook } from "@/api/bookApi";
+import { Link, useNavigate, useParams } from "react-router-dom";
+import { deleteBook, getBookById } from "@/api/bookApi";
+import BookCover from "@/components/BookCover";
+
+function formatDate(date) {
+  if (!date) return "-";
+
+  return new Date(date).toLocaleString("ko-KR", {
+    dateStyle: "long",
+    timeStyle: "short",
+  });
+}
 
 function BookDetailPage() {
   const { id } = useParams();
   const navigate = useNavigate();
-
   const [book, setBook] = useState(null);
   const [loading, setLoading] = useState(true);
+  const [deleting, setDeleting] = useState(false);
+  const [error, setError] = useState("");
 
   useEffect(() => {
-    const fetchBook = async () => {
+    async function loadBook() {
       try {
-        const data = await getBookById(id);
-        setBook(data);
-      } catch (error) {
-        console.error(error);
-        alert("도서 정보를 불러오지 못했습니다.");
-        navigate("/");
+        setBook(await getBookById(id));
+      } catch (loadError) {
+        setError(loadError.message);
       } finally {
         setLoading(false);
       }
-    };
-    fetchBook();
-  }, [id, navigate]);
+    }
+
+    loadBook();
+  }, [id]);
 
   const handleDelete = async () => {
-    if (!window.confirm("정말 삭제하시겠습니까?")) return;
+    if (!window.confirm("이 도서를 삭제하시겠습니까?")) return;
+
     try {
+      setDeleting(true);
       await deleteBook(id);
       navigate("/");
-    } catch (error) {
-      console.error(error);
-      alert("삭제에 실패했습니다.");
+    } catch (deleteError) {
+      setError(deleteError.message);
+      setDeleting(false);
     }
   };
 
-  if (loading) return <p>불러오는 중...</p>;
-  if (!book) return <p>도서를 찾을 수 없습니다.</p>;
+  if (loading) return <div className="container page-state">도서 정보를 불러오는 중입니다.</div>;
+  if (error || !book) {
+    return (
+      <div className="container page-state error">
+        <p>{error || "도서를 찾을 수 없습니다."}</p>
+        <Link className="button button-secondary" to="/">목록으로 돌아가기</Link>
+      </div>
+    );
+  }
 
   return (
-    <main>
-      <section>
-
-        {/* 상단 버튼 영역 */}
-        <div>
-          <button onClick={() => navigate("/")}>← 목록</button>
-          <div>
-            {/* 수정 버튼 → 1단계 수정 폼으로 */}
-            <button onClick={() => navigate(`/edit/${id}`)}>수정</button>
-            {/* 삭제 버튼 */}
-            <button onClick={handleDelete}>삭제</button>
-          </div>
+    <section className="container page-section detail-page">
+      <div className="detail-toolbar">
+        <Link className="back-link" to="/">목록으로</Link>
+        <div className="action-row">
+          <Link className="button button-secondary" to={`/edit/${id}`}>정보 수정</Link>
+          <button className="button button-danger" onClick={handleDelete} disabled={deleting}>
+            {deleting ? "삭제 중..." : "삭제"}
+          </button>
         </div>
+      </div>
 
-        {/* 표지 이미지 + 책 정보 */}
-        <div>
-
-          {/* 표지 이미지 */}
-          <div>
-            {book.coverImageUrl ? (
-              <img
-                src={book.coverImageUrl}
-                alt={`${book.title} 표지`}
-                style={{ width: "220px", borderRadius: "12px" }}
-              />
-            ) : (
-              <div>표지 없음</div>
-            )}
-
-            {/* ✅ 표지 재생성 버튼 → /edit/cover/:id 로 이동 */}
-            <button onClick={() => navigate(`/edit/cover/${id}`)}>
-              표지 재생성
-            </button>
-          </div>
-
-          {/* 책 정보 */}
-          <div>
-            <h2>{book.title}</h2>
-            <p>저자: {book.author}</p>
-            <p>
-              장르:{" "}
-              {Array.isArray(book.genre)
-                ? book.genre.join(", ")
-                : book.genre}
-            </p>
-            <p>등록일: {book.createdAt}</p>
-            <p>수정일: {book.updatedAt}</p>
-            <p>{book.content}</p>
-          </div>
-
+      <div className="detail-layout">
+        <div className="cover-column">
+          <BookCover book={book} className="detail-cover" />
+          <Link className="button button-accent button-wide" to={`/edit/cover/${id}`}>
+            AI 표지 {book.coverImageUrl ? "재생성" : "생성"}하기
+          </Link>
         </div>
-
-      </section>
-    </main>
+        <article className="panel detail-content">
+          <div className="chip-row">
+            {book.genre?.map((genre) => <span className="chip" key={genre}>{genre}</span>)}
+          </div>
+          <h1>{book.title}</h1>
+          <p className="detail-author">{book.author}</p>
+          <dl className="book-meta">
+            <div><dt>등록일</dt><dd>{formatDate(book.createdAt)}</dd></div>
+            <div><dt>최근 수정</dt><dd>{formatDate(book.updatedAt)}</dd></div>
+          </dl>
+          <div className="description">
+            <h2>책 소개</h2>
+            {book.content.split("\n").map((paragraph) => (
+              <p key={paragraph}>{paragraph}</p>
+            ))}
+          </div>
+        </article>
+      </div>
+    </section>
   );
 }
 
