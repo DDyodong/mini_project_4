@@ -64,7 +64,7 @@ npm start
 
 2단계 화면에서 발표용 OpenAI API Key를 입력하고, 도서 표지 생성을 위한 기본 프롬프트를 수정할 수 있습니다.
 
-<img src="./image/Createcover.png" width="700" />
+<img src="./image/createcover.png" width="700" />
 
 ---
 
