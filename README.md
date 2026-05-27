@@ -45,15 +45,15 @@ npm start
 ## 실행 화면
 
 1. 목록에서 검색과 장르 필터를 보여줍니다.
-<img src="./images/main.png" width 700 />
+<img src="./images/main.png" width = "700" />
 2. `새 도서 등록`에서 도서 정보를 입력합니다.
-<img src="./images/info.png" width 700 />
+<img src="./images/info.png" width = "700" />
 3. 2단계 화면에서 발표용 OpenAI API Key를 입력하고 기본 프롬프트를 수정합니다.
-<img src="./images/Createcover.png" width 700 />
+<img src="./images/Createcover.png" width = "700" />
 4. AI 표지를 생성하고 미리보기 후 `이 표지로 저장하기`를 누릅니다.
-<img src="./images/complete.png" width 700 />
+<img src="./images/complete.png" width = "700" />
 5. 상세 화면과 목록 화면에 저장된 표지가 이미지로 반영되는 것을 확인합니다.
-<img src="./images/detail.png" width 700 />
+<img src="./images/detail.png" width = "700" />
 6. 상세 화면에서 정보 수정, 표지 재생성, 삭제를 시연합니다.
 
 신규 등록은 AI 표지를 저장한 후에 완료됩니다. 기존 샘플 도서는 표지 없이도 표시되며, 필요할 때 상세 화면에서 표지를 생성할 수 있습니다.
