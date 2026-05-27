@@ -44,7 +44,15 @@ function HomePage() {
     });
   }, [books, searchTerm, genre]);
 
-  const generatedCoverCount = books.filter((book) => book.coverImageUrl).length;
+  const topViewedBooks = useMemo(() => {
+    return [...books]
+      .sort((a, b) => (b.views ?? 0) - (a.views ?? 0))[0];
+  }, [books]);
+
+  const topLikedBooks = useMemo(() => {
+    return [...books]
+      .sort((a, b) => (b.likes ?? 0) - (a.likes ?? 0))[0];
+  }, [books]);
 
   return (
     <>
@@ -64,10 +72,18 @@ function HomePage() {
             새 도서 등록하기
           </Link>
         </div>
-        <div className="container stat-row" aria-label="도서 현황">
-          <div><strong>{books.length}</strong><span>등록 도서</span></div>
-          <div><strong>{generatedCoverCount}</strong><span>AI 표지</span></div>
-          <div><strong>{genres.length - 1}</strong><span>장르</span></div>
+      </section>
+
+      <section className="rank">
+        <div className="container stat-row" aria-label="도서 랭킹">
+          <div>
+            <strong>{topViewedBooks ? topViewedBooks.title : "-"}</strong>
+            <span>😚 조회수 1위</span>
+          </div>
+          <div>
+            <strong>{topLikedBooks ? topLikedBooks.title : "-"}</strong>
+            <span>❤️ 좋아요 1위</span>
+          </div>
         </div>
       </section>
 
